@@ -1,6 +1,8 @@
 # meldmenu
 meld right click menu for windows
 
+# Demo
+![meld-compare-it](picture/meld-compare-it.png)
 
 # Require
   * install meld first http://meldmerge.org/
