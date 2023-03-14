@@ -1,10 +1,11 @@
 ; Script generated with the Venis Install Wizard
 !include "FileFunc.nsh"
+!include x64.nsh
 
 ; Define your application name
 !define APPNAME "meldmenu"
-!define PRODUCT_VERSION "1.0.0.0"
-!define VERSION "1.2022.05.13"
+!define PRODUCT_VERSION "1.0.0.1"
+!define VERSION "1.2023.03.14"
 !define APPNAMEANDVERSION "meldmenu ${PRODUCT_VERSION}"
 !define ARP "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 !define PUBLISH "coolshou.idv.tw"
@@ -118,30 +119,35 @@ BrandingText "Meld Right Click Menu"
 
 
 Function .onInit
+	Push $R0
 	ClearErrors
 	#read x86 in x64 system
-	ReadRegStr $0 HKLM "SOFTWARE\WOW6432Node\Meld" "Executable"
-${If} ${Errors}
-  ReadRegStr $0 HKLM "SOFTWARE\Meld" "Executable"
-${EndIf}
+	#ReadRegStr $R0 HKLM "SOFTWARE\WOW6432Node\Meld" "Executable"
+#${If} ${Errors}
+	${If} ${RunningX64}
+	SetRegView 64
+	${EndIf}
+	ReadRegStr $R0 HKLM "SOFTWARE\Meld" "Executable"
+#${EndIf}
 
-${IF} $0 == ""
-    #MESSAGEBOX MB_OK "meld not exists"
+${IF} $R0 == ""
+    MESSAGEBOX MB_OK "meld not exists"
+    Abort
 ${ELSE}
-    #MESSAGEBOX MB_OK "meld install at $0"
-		StrCpy $MELDEXE $0
+    #MESSAGEBOX MB_OK "meld install at $R0"
+		StrCpy $MELDEXE $R0
 ${ENDIF}
 
 FunctionEnd
 
 Function .onInstSuccess
 	WriteRegStr HKCR "*\shell\${APPNAME}" "" "Compare it!"
-	WriteRegStr HKCR "*\shell\${APPNAME}" "Icon" $MELDEXE
+	WriteRegStr HKCR "*\shell\${APPNAME}" "Icon" "$MELDEXE"
 	WriteRegStr HKCR "*\shell\${APPNAME}\command" "" '"$INSTDIR\singleinstance.exe" "%1" "$MELDEXE" $$files --si-timeout 400'
 	WriteRegStr HKCR "Folder\shell\${APPNAME}" "" "Compare it!"
-	WriteRegStr HKCR "Folder\shell\${APPNAME}" "Icon" $MELDEXE
+	WriteRegStr HKCR "Folder\shell\${APPNAME}" "Icon" "$MELDEXE"
 	WriteRegStr HKCR "Folder\shell\${APPNAME}\command" "" '"$INSTDIR\singleinstance.exe" "%1" "$MELDEXE" $$files --si-timeout 400'
-	
+
 FunctionEnd
 
 
